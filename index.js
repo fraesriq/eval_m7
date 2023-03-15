@@ -4,7 +4,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-import {addPais} from './consultas.js';
+import {addPais, deletePais, filtrarPaises } from './consultas.js';
 
 
 let PORT = process.env.PORT || 3000;
@@ -31,36 +31,22 @@ app.listen(PORT, () => console.log("http://localhost:3000"));
 
 //RUTAS DE VISTAS
 app.get(["/", "/home"], async (req, res) => {
-    /* let consulta =`
-        SELECT p.nombre, p.continente, p.poblacion, pp.pib_2019, pp.pib_2020 FROM paises p
-        join paises_pib pp
-        on p.nombre = pp.nombre
-    `;
-
-    let cliente = await pool.connect();
-    if(cursor == null){
-        cursor = cliente.query(new Cursor(consulta))
-    }
-    cursor.read(2, (error, rows) => {
-        if(error) return res.send("ha ocurrido un error");
-        if(rows.length == 0){
-            cursor.close(() => {
-                cliente.release();
-            cursor = null;
-            res.render("home", {
-                final: "No hay más elementos por mostrar"
-            })
-            });
-        }else {
-            cliente.release();
-            res.render("home", {
-                paises: rows
-            })
-        }
-        
-    }) */
-
-    res.render("home");
+        let limit = req.query.limit || 2;
+        let offset = req.query.offset || 0;
+    filtrarPaises(limit, offset).then(paises => {
+        console.log(paises)
+       if(paises.length == 0){
+        ultimoOffset = 0;
+       }
+        res.render("home", {
+            paises,
+            ultimoOffset: offset 
+        });
+    }).catch(error => {
+        res.render("home", {
+            error
+        });
+    })
 })
 
 
@@ -79,7 +65,18 @@ app.post("/add/pais", async (req, res) => {
     })
 });
 
-//RUTA AGREGAR PAIS
+//RUTA ELIMINAR PAIS VISTA
 app.get("/delete/pais", async (req, res) => {
     res.render("deletePais");
+});
+
+//RUTA ELIMINAR PAIS ENDPOINT
+app.delete("/delete/pais/:nombre", async (req, res) => {
+    let nombre = req.params.nombre;
+    deletePais(nombre).then(respuesta => {
+        res.json({code: 200, message: respuesta})
+    }).catch(error => {
+        res.status(500).json({code: 500, error})
+    })
+
 });
