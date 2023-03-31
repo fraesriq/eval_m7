@@ -1,26 +1,22 @@
 <h1 class="text-center mt-5">Página principal</h1>
 
-
 <section>
-    Cantidad de registros a mostrar:
-    <select name="option" id="option">
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="5">5</option>
-    </select>
-    <button class="btn btn-primary" id="btnSiguiente" data-offset="{{ultimoOffset}}">Siguiente</button>
+	Cantidad de registros a mostrar:
+	<select name="option" id="option">
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="5">5</option>
+	</select>
+	<button class="btn btn-primary" id="btnSiguiente" data-offset="{{ultimoOffset}}">Siguiente</button>
 </section>
-
-{{#each paises}}
-    <p>{{this.nombre}}</p>
-{{/each}}
-
+	
+    {{>table}}
 
 <script>   
-    let btnSiguiente = document.getElementById("btnSiguiente");
-    btnSiguiente.addEventListener("click", (event) => {
-        let ultimo = parseInt(btnSiguiente.dataset.offset) + parseInt(option.value);
-        if(ultimo == NaN) ultimo = 0;
-        location.href = `http://localhost:3000/home?limit=${option.value}&offset=${ultimo}`
-    })
+	let btnSiguiente = document.getElementById("btnSiguiente");
+	btnSiguiente.addEventListener("click", (event) => {
+		let ultimo = parseInt(btnSiguiente.dataset.offset) + parseInt(option.value);
+		if(ultimo == NaN) ultimo = 0;
+		location.href = `http://localhost:3000/home?limit=${option.value}&offset=${ultimo}`
+	})
 </script>
